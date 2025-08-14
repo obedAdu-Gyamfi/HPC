@@ -1,4 +1,5 @@
-CFLAGS:= -W -pedantic -Wextra -Werror -g -std=gnu89
+SHELL:= /bin/bash
+PLOT:= /bin/gnuplot
 BINARY:= bin
 
 SOURCES:= $(wildcard *.c)
@@ -11,12 +12,17 @@ $(BINARY): $(OBJECTS)
 	@gcc -o  $@ $^
 
 %.o: %.c
-	@gcc $(CFLAGS) -MMD -c $^ -o $@
+	@gcc  -MMD -g -c $^ -o $@
 
 -include $(DEPS)
 
 run: $(BINARY)
-	@./$(BINARY)
+	@./$(BINARY) 
 clean:
 	@rm $(OBJECTS) $(BINARY) $(DEPS)
+
+script:
+	@echo "starting script..."
+
+
 
