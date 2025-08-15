@@ -21,13 +21,11 @@
  */
 
 void matrix_vector(int m, int n, double *matA, double *vecA, double *matB){
-	clock_t start, end;
-	double t_used;	
+	//clock_t start, end;
+	//double t_used;	
 	int i, j;
 	start = clock();
 
-	//matB = (double *)malloc(sizeof(double) * n);
-	//if (matB != {
 	for(i = 0; i < m; i++){
 		matB[i] = 0;
 		for (j = 0; j < n; j++){
@@ -35,12 +33,13 @@ void matrix_vector(int m, int n, double *matA, double *vecA, double *matB){
 		}
 	}
 	end = clock();
-	t_used = ((double)(end - start))/CLOCKS_PER_SEC;
-	printf("Matrix Vector operation finished in %f secs\n", t_used);
+	t_used = (double *)malloc(sizeof(double));
+	if (t_used != NULL){
+		*t_used = ((double)(end - start))/CLOCKS_PER_SEC;
+	}
+	//printf("Matrix Vector operation finished in %lf secs\n", *t_used);
 	
 }
-
-
 /**
  * matrix_matrix - This function performs a matrix matrix multipliction.
  *
@@ -56,22 +55,30 @@ void matrix_vector(int m, int n, double *matA, double *vecA, double *matB){
  */
 
 void matrix_matrix(int m, int n, double *matA, double *matB, double *matC){
-	clock_t start, end;
-	double t_used;
-	start = clock();
-	int i, j, k;
-	double sum;
+        //clock_t start, end;
+        //double t_used;
+        start = clock();
+        int i, j, k;
+        double sum;
 
-	for (i = 0; i < m; i++){
-		for (j = 0; j < n; j++){
-			sum = 0;
-			for (k = 0; k < n; k++){
-				sum += (matA[i * n  + k] * matB[k * n + j]);
-			}
-			matC[i * n + j] = sum;
-		}
+        for (i = 0; i < m; i++){
+                for (j = 0; j < n; j++){
+                        sum = 0;
+                        for (k = 0; k < n; k++){
+                                sum += (matA[i * n  + k] * matB[k * n + j]);
+                        }
+                        matC[i * n + j] = sum;
+                }
+        }
+        end = clock();
+        t_used = (double *)malloc(sizeof(double));
+	if (t_used != NULL){
+		*t_used = ((double)(end - start))/CLOCKS_PER_SEC;
 	}
-	end = clock();
-	t_used = ((double)(end - start))/CLOCKS_PER_SEC;
-	printf("matrix matrix multiplication finished in %lf secs\n", t_used);
+	//printf("matrix matrix multiplication finished in %lf secs\n", *t_used);
 }
+
+
+
+
+ 
