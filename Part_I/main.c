@@ -1,5 +1,10 @@
 #include "vector.h"
 #include "matrix.h"
+/**
+ * Author: Obed Adu-Gyamfi
+ * Email: adugyamfiobed.tpp3@gmail.com
+ * github: @obedAdu-Gyamfi
+ */
 
 /**
  * main - Entry point
