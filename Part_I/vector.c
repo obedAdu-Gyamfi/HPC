@@ -20,10 +20,8 @@
  */
 
 double vector_vector(int m, int n, double *vecA, double *vecB){
-	//clock_t start, end;
 	double results = 0;
 	int i;
-	//double t_used;
 	start = clock();
 
 	for (i = 0; i <= m; i++){
@@ -34,6 +32,5 @@ double vector_vector(int m, int n, double *vecA, double *vecB){
 	if (t_used != NULL){
 		*t_used = ((double)(end - start))/CLOCKS_PER_SEC;
 	}
-	//printf("Vector Vector operations finished in %lf secs\n", *t_used);
 	return (results);
 }
