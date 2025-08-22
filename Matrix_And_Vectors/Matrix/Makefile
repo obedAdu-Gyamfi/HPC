@@ -5,8 +5,10 @@ OBJECTS:= $(SOURCES:.c=.o)
 DEPS:= $(OBJECTS:.o=.d)
 LOGFILE:= mpi_errors.log
 FILE:= 8597421_scale.txt
-N:= 25000000
+N:= 250000000
 SPEEDUP:= cores_speedup.txt
+EFFIC:= efficiency.txt
+PERFORM:= performance_analysis.txt
 all: run
 
 $(BINARY): $(OBJECTS)
@@ -18,15 +20,17 @@ $(BINARY): $(OBJECTS)
 -include $(DEPS)
 
 run: $(BINARY)	
-	@for i in $$(seq 1 4); do \
-		echo "Running Process for $$i Core(s) ....."; \
-		mpirun -np $$i ./$(BINARY) $(N) >> $(LOGFILE) 2>&1; \
+	@for i in $$(seq 1 6); do \
+		echo "Running Process with $$i Core(s) ....."; \
+		mpirun -np $$i -hostfile host.txt ./$(BINARY) $(N) >> $(LOGFILE) 2>&1; \
 	done;
 	@echo  "SpeedUp" > speedup.txt
-	
+	@echo "Efficiency" > $(EFFIC)
 	@serial=$$(awk 'NR==2 {print $$3}'  $(FILE)); \
-	grep $(N) $(FILE) | awk -v s="$$serial" '{print s/ $$3}' >> speedup.txt
+	grep $(N) $(FILE) | awk -v s="$$serial" '{print s / $$3}' >> speedup.txt; \
+	grep $(N) $(FILE) | awk -v b="$$serial" '{print b / ($$2 * $$3)}' >> $(EFFIC)
 	@paste $(FILE) speedup.txt > cores_speedup.txt
+	@paste cores_speedup.txt $(EFFIC) > performance_analysis.txt
 	@gnuplot -e "set terminal pngcairo size 1200, 800 font 'Arial, 12'; \
                 set title 'Time Vrs Cores'; \
                 set grid; \
@@ -34,8 +38,9 @@ run: $(BINARY)
                 set xlabel 'N'; \
                 set ylabel 'time(t) sec'; \
                 set output 'Time_Performance.png'; \
-                plot '$(FILE)' using 2:3 title '.'  with points lt 7 lc 2 lw 2 dt 1, \
-		'$(FILE)' using 2:3 title 'Time Performance' smooth csplines with lines lt 7 lc 7 dt 1"
+		set key top left; \
+                plot '$(PERFORM)' using 2:3 title '.'  with points lt 7 lc 2 lw 2 dt 1, \
+		'$(PERFORM)' using 2:3 title 'Time Performance' smooth csplines with lines lt 7 lc 7 dt 1"
 	@gnuplot -e "set terminal pngcairo size 1200, 800 font 'Arial, 12'; \
                 set title 'Time Vrs Cores'; \
                 set grid; \
@@ -43,14 +48,11 @@ run: $(BINARY)
                 set xlabel 'N'; \
                 set ylabel 'time(t) sec'; \
                 set output 'Speed_Performance.png'; \
-                plot '$(SPEEDUP)' using 2:4 title '.'  with points lt 7 lc 2 lw 2 dt 1, \
-                '$(SPEEDUP)' using 2:4 title 'SpeedUP Performance' smooth csplines with lines lt 7 lc 7 dt 1"
-
-
-
+		set key top left; \
+                plot '$(PERFORM)' using 2:4 title '.'  with points lt 7 lc 2 lw 2 dt 1, \
+                '$(PERFOM)' using 2:4 title 'SpeedUP Performance' smooth csplines with lines lt 7 lc 7 dt 1, \
+		'$(PERFORM)' using 2:5 title 'Efficiecy' with lines dashtype 7 lc 8"
 
 clean:
-	@rm $(OBJECTS) $(BINARY) $(DEPS) $(LOGFILE) *scale.txt *.png core*.txt s*.txt
-
-
+	@rm *.png $(OBJECTS) $(BINARY) $(DEPS) $(LOGFILE) $(PERFORM) $(SPEEDUP) $(EFFIC) s*.txt
 
