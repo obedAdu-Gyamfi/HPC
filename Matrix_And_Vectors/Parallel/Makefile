@@ -9,6 +9,7 @@ N:= 250000000
 SPEEDUP:= cores_speedup.txt
 EFFIC:= efficiency.txt
 PERFORM:= performance_analysis.txt
+HOST=host.txt
 all: run
 
 $(BINARY): $(OBJECTS)
@@ -20,9 +21,9 @@ $(BINARY): $(OBJECTS)
 -include $(DEPS)
 
 run: $(BINARY)	
-	@for i in $$(seq 1 6); do \
+	@for i in $$(seq 1 8); do \
 		echo "Running Process with $$i Core(s) ....."; \
-		mpirun -np $$i -hostfile host.txt ./$(BINARY) $(N) >> $(LOGFILE) 2>&1; \
+		mpirun -np $$i -hostfile $(HOST) ./$(BINARY) $(N) >> $(LOGFILE) 2>&1; \
 	done;
 	@echo  "SpeedUp" > speedup.txt
 	@echo "Efficiency" > $(EFFIC)
@@ -54,5 +55,5 @@ run: $(BINARY)
 		'$(PERFORM)' using 2:5 title 'Efficiecy' with lines dashtype 7 lc 8"
 
 clean:
-	@rm *.png $(OBJECTS) $(BINARY) $(DEPS) $(LOGFILE) $(PERFORM) $(SPEEDUP) $(EFFIC) s*.txt
+	@rm *.png 8*.txt $(OBJECTS) $(BINARY) $(DEPS) $(LOGFILE) $(PERFORM) $(SPEEDUP) $(EFFIC) s*.txt
 
