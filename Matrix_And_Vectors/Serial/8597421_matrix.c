@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "8597421_matrix.h"
 
 /**
  * Author: Obed Adu-Gyamfi
@@ -22,15 +22,21 @@
 
 void matrix_vector(int m, int n, double *matA, double *vecA, double *matB){
 	int i, j;
+	start = clock();
+
 	for(i = 0; i < m; i++){
 		matB[i] = 0;
 		for (j = 0; j < n; j++){
 			matB[i] += matA[i * n + j] * vecA[j];
 		}
 	}
-
+	end = clock();
+	t_used = (double *)malloc(sizeof(double));
+	if (t_used != NULL){
+		*t_used = ((double)(end - start))/CLOCKS_PER_SEC;
+	}
+	
 }
-
 /**
  * matrix_matrix - This function performs a matrix matrix multipliction.
  *
@@ -46,9 +52,7 @@ void matrix_vector(int m, int n, double *matA, double *vecA, double *matB){
  */
 
 void matrix_matrix(int m, int n, double *matA, double *matB, double *matC){
-        //clock_t start, end;
-        //double t_used;
-        //start = clock();
+        start = clock();
         int i, j, k;
         double sum;
 
@@ -61,6 +65,11 @@ void matrix_matrix(int m, int n, double *matA, double *matB, double *matC){
                         matC[i * n + j] = sum;
                 }
         }
+        end = clock();
+        t_used = (double *)malloc(sizeof(double));
+	if (t_used != NULL){
+		*t_used = ((double)(end - start))/CLOCKS_PER_SEC;
+	}
 }
 
 

@@ -5,7 +5,7 @@ OBJECTS:= $(SOURCES:.c=.o)
 DEPS:= $(OBJECTS:.o=.d)
 LOGFILE:= mpi_errors.log
 FILE:= 8597421_scale.txt
-N:= 250000000
+N:= 2500000000
 SPEEDUP:= cores_speedup.txt
 EFFIC:= efficiency.txt
 PERFORM:= performance_analysis.txt
@@ -22,8 +22,8 @@ $(BINARY): $(OBJECTS)
 
 run: $(BINARY)	
 	@for i in $$(seq 1 8); do \
-		echo "Running Process with $$i Core(s) ....."; \
-		mpirun -np $$i -hostfile $(HOST) ./$(BINARY) $(N) >> $(LOGFILE) 2>&1; \
+		echo "Running Process with $$i Core(s) ..."; \
+		mpirun -np $$i ./$(BINARY) $(N) >> $(LOGFILE) 2>&1; \
 	done;
 	@echo  "SpeedUp" > speedup.txt
 	@echo "Efficiency" > $(EFFIC)
@@ -32,6 +32,7 @@ run: $(BINARY)
 	grep $(N) $(FILE) | awk -v b="$$serial" '{print b / ($$2 * $$3)}' >> $(EFFIC)
 	@paste $(FILE) speedup.txt > cores_speedup.txt
 	@paste cores_speedup.txt $(EFFIC) > performance_analysis.txt
+	@echo "Beginning Plot ..."
 	@gnuplot -e "set terminal pngcairo size 1200, 800 font 'Arial, 12'; \
                 set title 'Time Vrs Cores'; \
                 set grid; \
@@ -51,9 +52,9 @@ run: $(BINARY)
                 set output 'Speed_Performance.png'; \
 		set key top left; \
                 plot '$(PERFORM)' using 2:4 title '.'  with points lt 7 lc 2 lw 2 dt 1, \
-                '$(PERFOM)' using 2:4 title 'SpeedUP Performance' smooth csplines with lines lt 7 lc 7 dt 1, \
-		'$(PERFORM)' using 2:5 title 'Efficiecy' with lines dashtype 7 lc 8"
+                '$(PERFOM)' using 2:4 title 'SpeedUP Performance' smooth csplines with lines lt 7 lc 7 dt 1"
+	@rm s*.txt $(EFFIC) $(SPEEDUP)
 
 clean:
-	@rm *.png 8*.txt $(OBJECTS) $(BINARY) $(DEPS) $(LOGFILE) $(PERFORM) $(SPEEDUP) $(EFFIC) s*.txt
+	@rm *.png *.txt $(OBJECTS) $(BINARY) $(DEPS) $(LOGFILE) $(PERFORM) $(SPEEDUP) $(EFFIC)
 

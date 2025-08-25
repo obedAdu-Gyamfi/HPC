@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "8597421_matrix.h"
 
 /**
  * Author: Obed Adu-Gyamfi
@@ -21,8 +21,6 @@
  */
 
 void matrix_vector(int m, int n, double *matA, double *vecA, double *matB){
-	//clock_t start, end;
-	//double t_used;	
 	int i, j;
 	start = clock();
 
@@ -37,7 +35,6 @@ void matrix_vector(int m, int n, double *matA, double *vecA, double *matB){
 	if (t_used != NULL){
 		*t_used = ((double)(end - start))/CLOCKS_PER_SEC;
 	}
-	//printf("Matrix Vector operation finished in %lf secs\n", *t_used);
 	
 }
 /**
@@ -55,8 +52,6 @@ void matrix_vector(int m, int n, double *matA, double *vecA, double *matB){
  */
 
 void matrix_matrix(int m, int n, double *matA, double *matB, double *matC){
-        //clock_t start, end;
-        //double t_used;
         start = clock();
         int i, j, k;
         double sum;
@@ -75,7 +70,6 @@ void matrix_matrix(int m, int n, double *matA, double *matB, double *matC){
 	if (t_used != NULL){
 		*t_used = ((double)(end - start))/CLOCKS_PER_SEC;
 	}
-	//printf("matrix matrix multiplication finished in %lf secs\n", *t_used);
 }
 
 
