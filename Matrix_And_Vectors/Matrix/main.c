@@ -1,63 +1,53 @@
 #include "matrix.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <mpi.h>
- 
 
 int main(int argc, char **argv){
-    MPI_Init(&argc, &argv);
-    int rank, nprocs;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-    clock_t start, end;
-    double t_used;
-    FILE *file;
-    if (argc != 2) {
-        if (rank == 0) fprintf(stderr, "Usage: %s N\n", argv[0]);
-        MPI_Finalize();
-        return 1;
-    }
-
-    int n = atoi(argv[1]);   // n x n matrix
-    int m = n;
-    int i, j;
-
-    double *matA = NULL, *vec = NULL, *rbuf = NULL, *matB = NULL, *ans = NULL;
-
-    // Per-rank rows (counts) and row displacements (both in ROWS)
-    int *rows      = (int *)malloc(sizeof(int) * nprocs);
-    int *row_displ = (int *)malloc(sizeof(int) * nprocs);
-
-    vec = (double *)malloc(sizeof(double) * n);             // all ranks need vec
-
-    if (rank == 0) {
-        // Compute rows/displacements in ROWS
-	if (nprocs == 1){
-		file = fopen("data.txt", "w");
-		fprintf(file, "%-*s %-*s %-*s\n",WIDTH, "N",WIDTH, "Core(s)", WIDTH,"M.V/s");
-
+	MPI_Init(&argc, &argv);
+	int rank, nprocs;
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+	clock_t start, end;
+	double t_used;
+	FILE *file;
+	if (argc != 2){
+		if (rank == 0) fprintf(stderr, "Usage: %s N\n", argv[0]);
+		MPI_Finalize();
+		return 1;
 	}
-	else{
+	int n = atoi(argv[1]);
+	int m = n;
+	int i, j;
+	double *matA = NULL, *vec = NULL, *rbuf = NULL, *matB = NULL, *ans = NULL;
+
+	// Per-rank rows (counts) and row displacements (both in ROWS)
+	int *rows      = (int *)malloc(sizeof(int) * nprocs);
+	int *row_displ = (int *)malloc(sizeof(int) * nprocs);
+
+	vec = (double *)malloc(sizeof(double) * n);// all ranks need vec
+
+	if (rank == 0){
+		// Compute rows/displacements in ROWS
+		if (nprocs == 1){
+			file = fopen("data.txt", "w");
+			fprintf(file, "%-*s %-*s %-*s\n",WIDTH, "N",WIDTH, "Core(s)", WIDTH,"M.V/s");
+		}
+		else{
 		file = fopen("data.txt", "a");
-	}
-	if (!file){
-		fprintf(stderr, "Unable to open file for write operation!\n");
-		exit(-1);
-	}
-        for (j = 0; j < nprocs; j++) {
-            int start = (j * n) / nprocs;
-            int end   = ((j + 1) * n) / nprocs;
-            rows[j]      = end - start;   // rows for rank j
-            row_displ[j] = start;         // starting row index
-        }
-
-        // Allocate and fill matrix and vector
-        matA = (double *)malloc(sizeof(double) * n * m);
-        for (i = 0; i < n * m; i++) matA[i] = rand() / (double)RAND_MAX;
-
-        for (i = 0; i < n; i++) vec[i] = rand() / (double)RAND_MAX;
-
-        ans = (double *)malloc(sizeof(double) * n);
+		}
+		if (!file){
+			fprintf(stderr, "Unable to open file for write operation!\n");
+			exit(-1);
+		}
+		for (j = 0; j < nprocs; j++){
+			int start = (j * n) / nprocs;
+			int end   = ((j + 1) * n) / nprocs;
+			rows[j]      = end - start;   // rows for rank j
+			row_displ[j] = start;         // starting row index
+        	}
+		// Allocate and fill matrix and vector
+		matA = (double *)malloc(sizeof(double) * n * m);
+		for (i = 0; i < n * m; i++) matA[i] = rand() / (double)RAND_MAX;
+		for (i = 0; i < n; i++) vec[i] = rand() / (double)RAND_MAX;
+		ans = (double *)malloc(sizeof(double) * n);
     }
 
     // Broadcast vector to everyone

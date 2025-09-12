@@ -14,8 +14,8 @@ $(BINARY): $(OBJECTS)
 -include $(DEPS)
 
 run: $(BINARY)
-	@for i in $$(seq 1 2); do \
-		mpirun -np $$i ./$(BINARY) 5000 >> error.log 2>&1; \
+	@for i in $$(seq 1 6); do \
+		mpirun -np $$i ./$(BINARY) 2500000 >> error.log 2>&1; \
 	done;
 
 clean:
